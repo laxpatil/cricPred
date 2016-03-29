@@ -17,21 +17,21 @@ def LoadData():
     database   = conn["CricketData"]
     collection = database["Statistics"]
     c=0
-    for f in os.listdir("F:\\Books\\Statistical Machine Learning (SML)\\Project\\Data\\All Matches"):
+    for f in os.listdir("C:\\Users\\Aarav\\Downloads\\odis"):
         print f
-        with open("F:\\Books\\Statistical Machine Learning (SML)\\Project\\Data\\All Matches\\"+ f, 'r') as stream:
+        with open("C:\\Users\\Aarav\\Downloads\\odis\\"+ f, 'r') as stream:
             try:
                 match = yaml.load(stream)
                 j = json.dumps(match, default=date_handler)
                 jObject= json.loads(j)
-                print jObject['innings'][0]['1st innings']['deliveries'][0]['0.1']
+                #print jObject['innings'][0]['1st innings']['deliveries'][0]['0.1']
                 collection.insert(jObject,check_keys=False)
-                print("Resond Inserted!")
+                #print("Resond Inserted!")
             except yaml.YAMLError as exc:
                 print(exc)
         c=c+1
-        if(c==3):
-            break            
+        #if(c==3):
+        #    break            
 LoadData()
 
 
