@@ -14,12 +14,12 @@ def date_handler(obj):
 
 def LoadData():
     conn = MongoClient('mongodb://localhost:27017/')
-    database   = conn["AllCricketData"]
+    database   = conn["ODI"]
     collection = database["Stats"]
     count=0
-    for f in os.listdir("F:\\Books\\Statistical Machine Learning (SML)\\Project\\Data\\All Matches"):
+    for f in os.listdir("F:\\Books\\Statistical Machine Learning (SML)\\Project\\Data\\odis"):
         print f
-        with open("F:\\Books\\Statistical Machine Learning (SML)\\Project\\Data\\All Matches\\"+ f, 'r') as stream:
+        with open("F:\\Books\\Statistical Machine Learning (SML)\\Project\\Data\\odis\\"+ f, 'r') as stream:
             try:
                 match = yaml.load(stream)
                 j = json.dumps(match, default=date_handler)
