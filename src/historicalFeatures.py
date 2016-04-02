@@ -1,4 +1,6 @@
 
+# @author laxmikant
+
 from pymongo import MongoClient
 import os
 import sys
@@ -14,14 +16,11 @@ database   = conn["CricketData"]
 collection = database["Statistics"]
 
 
-'''
-for entry in collection.find({'info.outcome.by.runs': 38}):
-    print entry['info'].keys()
-'''
-loc="F:\\Books\\Statistical Machine Learning (SML)\\Project\\Data\\Statistics\\avgRunsInning.csv"
 
+
+
+# data statistics
 countries=[]
-
 NUM_MATCHES={}
 RUNS={}
 WICKETS_LOST={}
@@ -30,8 +29,10 @@ CONCEDED_RUNS={}
 OPPONENT_WICKETS_TAKEN={}
 OPPONENT_ALL_OUT={}
 
-
+loc="F:\\Books\\Statistical Machine Learning (SML)\\Project\\Data\\Statistics\\avgRunsInning.csv"
 openFile = open(loc, "w")
+
+#start calculating stats
 for doc in collection.find():
     if doc['info']['match_type']=='ODI':
         print doc['innings'][0]['1st innings']['team']
@@ -175,7 +176,7 @@ fileHeader="Team,Total Matches Played,Runs Scored,Wickets Lost,Got All Out,Runs 
 openFile.write(fileHeader)
 openFile.write("\n")
 for team in countries:
-    print team +" : "+ str(RUNS[team])
+    print team +" : "+ str(RUNS[team]) ,
     n=NUM_MATCHES[team]
     print RUNS[team]
     print n
