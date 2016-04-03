@@ -12,8 +12,8 @@ import yaml
 from _ast import Num
 
 conn = MongoClient('mongodb://localhost:27017/')
-database   = conn["CricketData"]
-collection = database["Statistics"]
+database   = conn["ODI"]
+collection = database["Stats"]
 
 
 
@@ -32,8 +32,18 @@ OPPONENT_ALL_OUT={}
 loc="F:\\Books\\Statistical Machine Learning (SML)\\Project\\Data\\Statistics\\avgRunsInning.csv"
 openFile = open(loc, "w")
 
+count=0
+no_result=0
 #start calculating stats
 for doc in collection.find():
+    print doc['info']['outcome']
+    if 'result' in doc['info']['outcome'].keys():
+        print doc['info']['outcome']['result']
+        if doc['info']['outcome']['result']=='no result':
+            no_result=no_result+1
+            continue
+    
+    count= count+1
     if doc['info']['match_type']=='ODI':
         print doc['innings'][0]['1st innings']['team']
         num_innings=len(doc['innings'])
@@ -168,6 +178,9 @@ for doc in collection.find():
         print "..........................................................................................................."   
         
         
+#Total 
+print "No result matches: "+ str(no_result)
+print "Total Stats collected for "+ str(count)+ " matches"
 
 ## WRITING TO FILE
 print "Writing to file"
@@ -175,12 +188,15 @@ openFile=open("F:\\Books\\Statistical Machine Learning (SML)\\Project\\Data\\Sta
 fileHeader="Team,Total Matches Played,Runs Scored,Wickets Lost,Got All Out,Runs Conceded,Opponent Wickets Taken,Opponent All Out "
 openFile.write(fileHeader)
 openFile.write("\n")
+
+print "------All features----"
 for team in countries:
-    print team +" : "+ str(RUNS[team]) ,
+    #print team +" : "+ str(RUNS[team]) ,
     n=NUM_MATCHES[team]
-    print RUNS[team]
-    print n
+    #print str(RUNS[team])+ " ",
+    #print n
     feature="" + team + "," +str(n) + "," + str(float(RUNS[team])/n) + "," + str(float(WICKETS_LOST[team])/n) + "," + str(float(GOT_ALL_OUT[team])/n) + "," + str(float(CONCEDED_RUNS[team])/n) + "," + str(float(OPPONENT_WICKETS_TAKEN[team])/n) + "," + str(float(OPPONENT_ALL_OUT[team])/n) 
+    print feature
     openFile.write(feature)
     openFile.write("\n")               
         
