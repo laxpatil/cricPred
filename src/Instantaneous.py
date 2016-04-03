@@ -27,6 +27,7 @@ PLAYER_RUNS={}
 # ball_match=0
 # 
 # counter=0
+REMOVE_TEAMS={'Kenya','Bermuda','Scotland','Netherlands','Canada','Africa XI','Asia XI','United Arab Emirates', 'Hong Kong', 'Afghanistan'}
 
 #HOME RUN HITTING ABILITY
 for doc in collection.find():
@@ -42,6 +43,12 @@ for doc in collection.find():
         num_innings=len(doc['innings'])
         if(num_innings>2):
             continue
+    
+        
+        if doc['info']['teams'][0] in REMOVE_TEAMS or doc['info']['teams'][1] in REMOVE_TEAMS:
+            continue
+        
+        #print doc['info']['teams'][0] , doc['info']['teams'][1]
         
         #iterate for both innings
         for i in range(num_innings):
@@ -60,8 +67,8 @@ for doc in collection.find():
                 #print str(ball.keys()[0])
                 over=float(str(ball.keys()[0]))
 #                        
-                if over>=5.0 and over<10.0:
-                    #ball_match=ball_match+1    
+                
+                if over>=45.0 and over<50.0:     
                     for ball_attr in ball.keys():
                         #print ball[ball_attr]['runs']['total']
                         batsman=ball[ball_attr]['batsman']
@@ -114,15 +121,15 @@ for doc in collection.find():
 
 
 print "Writing to file"
-openFile=open("C:\\Users\\Aarav\\Desktop\\IndFeatures2.csv", "w")
-fileHeader="Batsman,Total Runs Scored,Home Runs,Milestones Reached, avg Balls Faced"
+openFile=open("C:\\Users\\Aarav\\Desktop\\UpdatedSegmentFeatures\\Segment10.csv", "w")
+fileHeader="Batsman,Total Runs Scored,Number of Home Runs,Number of Milestones Reached,Average Balls Faced"
 openFile.write(fileHeader)
 openFile.write("\n")
 
 print "---------------Statistics-------------"
 for player in HOME_RUN_LIST.keys():
     runs=PLAYER_RUNS[player]
-    n=float(BALLS_FACED[player]/MATCHES_PLAYED[player])
+    n=float(float(BALLS_FACED[player])/float(MATCHES_PLAYED[player]))
     
     HRA=float(HOME_RUN_LIST[player])
     if player in MILESTONE_LIST.keys():
