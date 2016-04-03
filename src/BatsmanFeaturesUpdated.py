@@ -24,6 +24,8 @@ MILESTONE_LIST={}
 BALLS_FACED={}
 MATCHES_PLAYED={}
 PLAYER_RUNS={}
+REMOVE_TEAMS={'Kenya','Bermuda','Scotland','Netherlands','Canada','Africa XI','Asia XI','United Arab Emirates', 'Hong Kong', 'Afghanistan'}
+
 # ball_match=0
 # 
 # counter=0
@@ -32,6 +34,9 @@ PLAYER_RUNS={}
 for doc in collection.find():
     #counter=counter+1
     #print doc['info']['outcome']
+    if doc['info']['teams'][0] in REMOVE_TEAMS or doc['info']['teams'][1] in REMOVE_TEAMS:
+        continue
+    
     if 'result' in doc['info']['outcome'].keys():
         #print doc['info']['outcome']['result']
         if doc['info']['outcome']['result']=='no result':
@@ -114,8 +119,8 @@ for doc in collection.find():
 
 
 print "Writing to file"
-openFile=open("C:\\Users\\Aarav\\Desktop\\BatsmanFeaturesUpdated.csv", "w")
-fileHeader="Batsman,Home Run Hitting Ability,Milestone Reaching Ability,Batting Average, Strike Rate,Matches Played"
+openFile=open("F:\\Books\\Statistical Machine Learning (SML)\\Project\\Data\\Statistics\\batsmanToBeClustered.csv", "w")
+fileHeader="Batsman,Home Run Hitting Ability,Milestone Reaching Ability,Batting Average,Strike Rate,Matches Played"
 openFile.write(fileHeader)
 openFile.write("\n")
 
