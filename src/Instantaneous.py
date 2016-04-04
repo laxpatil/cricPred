@@ -23,7 +23,9 @@ HOME_RUN_LIST={}
 MILESTONE_LIST={}
 BALLS_FACED={}
 MATCHES_PLAYED={}
-PLAYER_RUNS={}
+PLAYER_NON_HOME_RUNS={}
+PLAYER_HOME_RUNS={}
+TEAMS={}
 # ball_match=0
 # 
 # counter=0
@@ -53,11 +55,14 @@ for doc in collection.find():
         #iterate for both innings
         for i in range(num_innings):
             CURRENT_MATCH_RUNS={}
+           
+           
             if i==0:
                 deliveries=doc['innings'][0]['1st innings']['deliveries']
+                team = doc['innings'][0]['1st innings']['team']
             if i==1:
                 deliveries=doc['innings'][1]['2nd innings']['deliveries']
-                
+                team=doc['innings'][1]['2nd innings']['team']
                 
             for ball in deliveries:
                 #if ball.keys()[0]<5.0:
@@ -84,6 +89,11 @@ for doc in collection.find():
                             BALLS_FACED[batsman]=BALLS_FACED[batsman]+1
                         else:
                             BALLS_FACED[batsman]=1
+                            
+                        if batsman in TEAMS.keys():
+                            pass
+                        else:
+                            TEAMS[batsman]=team
                         
                         #add to Home RUN List
                         if run==4 or run==6:
@@ -93,11 +103,25 @@ for doc in collection.find():
                             else:
                                 HOME_RUN_LIST[batsman]=1
                                 
-                        if batsman in PLAYER_RUNS.keys():
-                            PLAYER_RUNS[batsman]=PLAYER_RUNS[batsman]+run
+                            if batsman in PLAYER_HOME_RUNS.keys():
+                                if run ==4:
+                                    PLAYER_HOME_RUNS[batsman]=PLAYER_HOME_RUNS[batsman]+4
+                                else:
+                                    PLAYER_HOME_RUNS[batsman]=PLAYER_HOME_RUNS[batsman]+6
+                            else:
+                                if run ==4:
+                                    PLAYER_HOME_RUNS[batsman]=4
+                                else:
+                                    PLAYER_HOME_RUNS[batsman]=6
+                                
+                           
                         else:
-                            PLAYER_RUNS[batsman]=0
-            
+                                                            
+                            if batsman in PLAYER_NON_HOME_RUNS.keys():
+                                PLAYER_NON_HOME_RUNS[batsman]=PLAYER_NON_HOME_RUNS[batsman]+run
+                            else:
+                                PLAYER_NON_HOME_RUNS[batsman]=run
+        
             #add to MILESTONE List
             for player in CURRENT_MATCH_RUNS.keys():
                 if CURRENT_MATCH_RUNS[player]>=50:
@@ -122,22 +146,34 @@ for doc in collection.find():
 
 print "Writing to file"
 openFile=open("C:\\Users\\Aarav\\Desktop\\UpdatedSegmentFeatures\\Segment10.csv", "w")
-fileHeader="Batsman,Total Runs Scored,Number of Home Runs,Number of Milestones Reached,Average Balls Faced"
+fileHeader="Batsman,Total Runs Scored,Home Run Hitting Ability,Home Runs,Non Home Runs,Number of Milestones Reached,Average Balls Faced,Team"
 openFile.write(fileHeader)
 openFile.write("\n")
 
 print "---------------Statistics-------------"
 for player in HOME_RUN_LIST.keys():
-    runs=PLAYER_RUNS[player]
-    n=float(float(BALLS_FACED[player])/float(MATCHES_PLAYED[player]))
     
+    if player in PLAYER_NON_HOME_RUNS.keys():
+        non_home_runs=PLAYER_NON_HOME_RUNS[player]
+    else:
+        non_home_runs=0
+        
+    if player in PLAYER_HOME_RUNS.keys():
+        home_runs=PLAYER_HOME_RUNS[player]
+    else:
+        home_runs=0
+        
+    runs=home_runs+non_home_runs
+    n=float(float(BALLS_FACED[player])/float(MATCHES_PLAYED[player]))
+    tm=TEAMS[player]
     HRA=float(HOME_RUN_LIST[player])
+    
     if player in MILESTONE_LIST.keys():
         MRA=float(MILESTONE_LIST[player])
     else:
         MRA=0
         
-    feature="" + player + "," + str(runs) + "," +str(HRA) + "," + str(MRA) + ","  + str(n)
+    feature="" + player + "," + str(runs) + "," +str(HRA) + "," +str(home_runs) + "," +str(non_home_runs) + "," + str(MRA) + ","  + str(n) + ","  + str(tm) 
     print feature
     openFile.write(feature)
     openFile.write("\n")
