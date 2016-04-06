@@ -109,6 +109,10 @@ for doc in collection.find():
                         batsman=ball[ball_attr]['batsman']
                         run=ball[ball_attr]['runs']['batsman']
                         
+                        #Match batsman to Team
+                        if batsman not in TEAMS.keys():
+                            TEAMS[batsman]=team
+                            
                         #Current segment batsman
                         if (over>=(segment-1)*5.0) and (over<segment*5.0):
                             if batsman not in CURRENT_SEGMENT_BATSMAN:
@@ -150,39 +154,37 @@ for doc in collection.find():
                         if (over>=seg0*5.0) and (over<seg1*5.0):
                             r1=r1+run
                             
-                        #ball faced till the segment
-                        if batsman in BALLS_FACED_TILL_NOW.keys():
-                            BALLS_FACED_TILL_NOW[batsman]=BALLS_FACED_TILL_NOW[batsman]+1
-                        else:
-                            BALLS_FACED_TILL_NOW[batsman]=1
-                            
-                        if batsman in TEAMS.keys():
-                            pass
-                        else:
-                            TEAMS[batsman]=team
-                        
-                        #add to Home RUNs & NON HOME RUNS
-                        if run==4 or run==6:
-                            #print "It's HOME RUN!"
-                            
-                            if batsman in PLAYER_HOME_RUNS.keys():
-                                if run ==4:
-                                    PLAYER_HOME_RUNS[batsman]=PLAYER_HOME_RUNS[batsman]+4
-                                else:
-                                    PLAYER_HOME_RUNS[batsman]=PLAYER_HOME_RUNS[batsman]+6
+                        #ball faced till LAST segment(n-1), Since we want to predict for Segment n, we need not worry about the suns in current segment
+                        if over<seg1*5.0:
+                            if batsman in BALLS_FACED_TILL_NOW.keys():
+                                BALLS_FACED_TILL_NOW[batsman]=BALLS_FACED_TILL_NOW[batsman]+1
                             else:
-                                if run ==4:
-                                    PLAYER_HOME_RUNS[batsman]=4
-                                else:
-                                    PLAYER_HOME_RUNS[batsman]=6
+                                BALLS_FACED_TILL_NOW[batsman]=1
                                 
-                           
-                        else:
-                                                            
-                            if batsman in PLAYER_NON_HOME_RUNS.keys():
-                                PLAYER_NON_HOME_RUNS[batsman]=PLAYER_NON_HOME_RUNS[batsman]+run
+                            
+                            
+                            #add to Home RUNs & NON HOME RUNS
+                            if run==4 or run==6:
+                                #print "It's HOME RUN!"
+                                
+                                if batsman in PLAYER_HOME_RUNS.keys():
+                                    if run ==4:
+                                        PLAYER_HOME_RUNS[batsman]=PLAYER_HOME_RUNS[batsman]+4
+                                    else:
+                                        PLAYER_HOME_RUNS[batsman]=PLAYER_HOME_RUNS[batsman]+6
+                                else:
+                                    if run ==4:
+                                        PLAYER_HOME_RUNS[batsman]=4
+                                    else:
+                                        PLAYER_HOME_RUNS[batsman]=6
+                                    
+                               
                             else:
-                                PLAYER_NON_HOME_RUNS[batsman]=run
+                                                                
+                                if batsman in PLAYER_NON_HOME_RUNS.keys():
+                                    PLAYER_NON_HOME_RUNS[batsman]=PLAYER_NON_HOME_RUNS[batsman]+run
+                                else:
+                                    PLAYER_NON_HOME_RUNS[batsman]=run
         
             
                 #if ball is not in the segment still add to TARGET
