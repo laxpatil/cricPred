@@ -35,7 +35,7 @@ REMOVE_TEAMS={'Kenya','Bermuda','Scotland','Netherlands','Canada','Africa XI','A
 
 #File writing
 #***************************CHANGE SEGMENT *********************************************************************
-segment=10
+segment=1
 #********************************************************************************
 filename="F:\\Books\\Statistical Machine Learning (SML)\\Project\\Data\\Statistics\\Segment"
 filename= filename+str(segment)+".csv"
@@ -184,17 +184,16 @@ for doc in collection.find():
                         
                         #CURRENT SEGMENT HOME RUNS & NON HOME RUNS
                         if(over>=seg1*5.0) and (over<segment*5.0):
-                            if batsman in CURRENT_HR.keys():
-                                CURRENT_HR[batsman]=CURRENT_HR[batsman]+run
-                            else:
-                                CURRENT_HR[batsman]=run
-                            
                             if run==4 or run==6:
+                                if batsman in CURRENT_HR.keys():
+                                    CURRENT_HR[batsman]=CURRENT_HR[batsman]+run
+                                else:
+                                    CURRENT_HR[batsman]=run
+                            else:
                                 if batsman in CURRENT_NHR.keys():
                                     CURRENT_NHR[batsman]=CURRENT_NHR[batsman]+run
                                 else:
                                     CURRENT_NHR[batsman]=run
-                            
                             
                         #ball faced till LAST segment(n-1), Since we want to predict for Segment n, we need not worry about the suns in current segment
                         if over<seg1*5.0:
