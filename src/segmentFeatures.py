@@ -35,7 +35,7 @@ REMOVE_TEAMS={'Kenya','Bermuda','Scotland','Netherlands','Canada','Africa XI','A
 
 #File writing
 #***************************CHANGE SEGMENT *********************************************************************
-segment=1
+segment=10
 #********************************************************************************
 filename="F:\\Books\\Statistical Machine Learning (SML)\\Project\\Data\\Statistics\\Segment"
 filename= filename+str(segment)+".csv"
@@ -189,10 +189,11 @@ for doc in collection.find():
                             else:
                                 CURRENT_HR[batsman]=run
                             
-                            if batsman in CURRENT_NHR.keys():
-                                CURRENT_NHR[batsman]=CURRENT_NHR[batsman]+run
-                            else:
-                                CURRENT_NHR[batsman]=run
+                            if run==4 or run==6:
+                                if batsman in CURRENT_NHR.keys():
+                                    CURRENT_NHR[batsman]=CURRENT_NHR[batsman]+run
+                                else:
+                                    CURRENT_NHR[batsman]=run
                             
                             
                         #ball faced till LAST segment(n-1), Since we want to predict for Segment n, we need not worry about the suns in current segment
