@@ -12,10 +12,11 @@ from time import mktime
 from bson import json_util
 from pymongo import MongoClient
 import yaml
+import csv
 
 
 conn = MongoClient('mongodb://localhost:27017/')
-database   = conn["ODI"]
+database   = conn["AllCricketData"]
 collection = database["Stats"]
 
 
@@ -34,19 +35,35 @@ REMOVE_TEAMS={'Kenya','Bermuda','Scotland','Netherlands','Canada','Africa XI','A
 
 #File writing
 #***************************CHANGE SEGMENT *********************************************************************
-segment=10
+segment=6
 #********************************************************************************
-filename="F:\\Books\\Statistical Machine Learning (SML)\\Project\\Data\\Statistics\\Segment"
+filename="C:\\Users\\Aarav\\Desktop\\UpdatedSegmentFeatures"
 filename= filename+str(segment)+".csv"
 openFile=open(filename, "w")
-fileHeader="Batsman,Total Runs Scored,Home Runs,Non Home Runs,Balls Faced,R0,W0,R1,W1,Target,Team"
+fileHeader="Batsman,Total Runs Scored,Home Runs,Non Home Runs,Balls Faced,R0,W0,R1,W1,Target,Team,Home"
 openFile.write(fileHeader)
 openFile.write("\n")
+
+VENUES={}
+file=open('C:\\Users\\Aarav\\Desktop\\venues.csv','r')
+reader=csv.reader(file,delimiter=',')
+for row in reader:
+    if row[0] in VENUES.keys():
+        pass
+    else:
+        VENUES[row[0]]=row[1]
+
+# for key,value in VENUES.iteritems():
+#     print key," : ",value
+#     
+
 
 #HOME RUN HITTING ABILITY
 for doc in collection.find():
     #counter=counter+1
     #print doc['info']['outcome']
+    
+
     if 'result' in doc['info']['outcome'].keys():
         #print doc['info']['outcome']['result']
         if doc['info']['outcome']['result']=='no result':
@@ -59,11 +76,19 @@ for doc in collection.find():
             continue
     
         
+  
+        
         if doc['info']['teams'][0] in REMOVE_TEAMS or doc['info']['teams'][1] in REMOVE_TEAMS:
             continue
         
         #print doc['info']['teams'][0] , doc['info']['teams'][1]
+    
+        venue=doc['info']['venue']
+        venue=venue.replace(",", "")
+
+        home_country=VENUES[venue]
         
+        #print venue, " : ",home_country
 
         #iterate for both innings
         for i in range(num_innings):
@@ -222,8 +247,13 @@ for doc in collection.find():
                 else:
                     balls_faced=0
                 
-                feature="" + player + "," + str(runs) + ","  +str(home_runs) + "," +str(non_home_runs) + "," +str(balls_faced)+ "," +str(r0)+ ","+ str(w0)+","+ str(r1)+","+  str(w1)+","+ str(target) + ","  + str(team)
-                print feature
+                if team==home_country:
+                    home_or_away=1
+                else:
+                    home_or_away=0
+                
+                feature="" + player + "," + str(runs) + ","  +str(home_runs) + "," +str(non_home_runs) + "," +str(balls_faced)+ "," +str(r0)+ ","+ str(w0)+","+ str(r1)+","+  str(w1)+","+ str(target) + ","  + str(team)+ ","  + str(home_or_away)
+                #print feature
                 openFile.write(feature)
                 openFile.write("\n")   
     
