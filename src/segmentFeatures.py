@@ -16,7 +16,7 @@ import csv
 
 
 conn = MongoClient('mongodb://localhost:27017/')
-database   = conn["AllCricketData"]
+database   = conn["ODI"]
 collection = database["Stats"]
 
 
@@ -35,17 +35,17 @@ REMOVE_TEAMS={'Kenya','Bermuda','Scotland','Netherlands','Canada','Africa XI','A
 
 #File writing
 #***************************CHANGE SEGMENT *********************************************************************
-segment=6
+segment=1
 #********************************************************************************
-filename="C:\\Users\\Aarav\\Desktop\\UpdatedSegmentFeatures"
+filename="F:\\Books\\Statistical Machine Learning (SML)\\Project\\Data\\Statistics\\Segment"
 filename= filename+str(segment)+".csv"
 openFile=open(filename, "w")
-fileHeader="Batsman,Total Runs Scored,Home Runs,Non Home Runs,Balls Faced,R0,W0,R1,W1,Target,Team,Home"
+fileHeader="Batsman,Total Runs Scored,Home Runs,Non Home Runs,Balls Faced,R0,W0,R1,W1,Current_HR,Current_NHR,Target,Team,Home"
 openFile.write(fileHeader)
 openFile.write("\n")
 
 VENUES={}
-file=open('C:\\Users\\Aarav\\Desktop\\venues.csv','r')
+file=open("F:\\Books\\Statistical Machine Learning (SML)\\Project\\Data\\venues.csv",'r')
 reader=csv.reader(file,delimiter=',')
 for row in reader:
     if row[0] in VENUES.keys():
@@ -98,6 +98,8 @@ for doc in collection.find():
             TEAMS={}
             BALLS_FACED_TILL_NOW={}
             CURRENT_SEGMENT_BATSMAN=[]
+            CURRENT_HR={}
+            CURRENT_NHR={}
             target=0
             wickets=0
             r0=0
@@ -174,10 +176,24 @@ for doc in collection.find():
                         if (over>=seg0*5.0) and (over<seg1*5.0) and ('wicket' in ball[ball_attr].keys()):
                             w1=w1+1
                             #print "wicket at " +ball_attr  
+                        
                             
                         #runs in segment n-1
                         if (over>=seg0*5.0) and (over<seg1*5.0):
                             r1=r1+run
+                        
+                        #CURRENT SEGMENT HOME RUNS & NON HOME RUNS
+                        if(over>=seg1*5.0) and (over<segment*5.0):
+                            if batsman in CURRENT_HR.keys():
+                                CURRENT_HR[batsman]=CURRENT_HR[batsman]+run
+                            else:
+                                CURRENT_HR[batsman]=run
+                            
+                            if batsman in CURRENT_NHR.keys():
+                                CURRENT_NHR[batsman]=CURRENT_NHR[batsman]+run
+                            else:
+                                CURRENT_NHR[batsman]=run
+                            
                             
                         #ball faced till LAST segment(n-1), Since we want to predict for Segment n, we need not worry about the suns in current segment
                         if over<seg1*5.0:
@@ -255,40 +271,18 @@ for doc in collection.find():
                 else:
                     home_or_away=0
                 
-                feature="" + player + "," + str(runs) + ","  +str(home_runs) + "," +str(non_home_runs) + "," +str(balls_faced)+ "," +str(r0)+ ","+ str(w0)+","+ str(r1)+","+  str(w1)+","+ str(target) + ","  + str(team)+ ","  + str(home_or_away)
-                #print feature
+                
+                if player in CURRENT_HR.keys():
+                    current_hr=CURRENT_HR[player]
+                else:
+                    current_hr=0
+                
+                if player in CURRENT_NHR.keys():
+                    current_nhr=CURRENT_NHR[player]
+                else:
+                    current_nhr=0
+                
+                feature="" + player + "," + str(runs) + ","  +str(home_runs) + "," +str(non_home_runs) + "," +str(balls_faced)+ "," +str(r0)+ ","+ str(w0)+","+ str(r1)+","+  str(w1)+","+ str(current_hr)+","+str(current_nhr)+"," +str(target) + ","  + str(team)+ ","  + str(home_or_away)
+                print feature
                 openFile.write(feature)
                 openFile.write("\n")   
-    
-
-  
- 
-'''
-print "---------------Statistics-------------"
-for player in HOME_RUN_LIST.keys():
-    
-    if player in PLAYER_NON_HOME_RUNS.keys():
-        non_home_runs=PLAYER_NON_HOME_RUNS[player]
-    else:
-        non_home_runs=0
-        
-    if player in PLAYER_HOME_RUNS.keys():
-        home_runs=PLAYER_HOME_RUNS[player]
-    else:
-        home_runs=0
-        
-    runs=home_runs+non_home_runs
-    n=float(float(BALLS_FACED[player])/float(MATCHES_PLAYED[player]))
-    tm=TEAMS[player]
-    HRA=float(HOME_RUN_LIST[player])
-    
-    if player in MILESTONE_LIST.keys():
-        MRA=float(MILESTONE_LIST[player])
-    else:
-        MRA=0
-        
-    feature="" + player + "," + str(runs) + "," +str(HRA) + "," +str(home_runs) + "," +str(non_home_runs) + "," + str(MRA) + ","  + str(n) + ","  + str(tm) 
-    print feature
-    openFile.write(feature)
-    openFile.write("\n")
-'''    
