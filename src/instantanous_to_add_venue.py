@@ -220,6 +220,12 @@ for doc in collection.find():
                         #update target for 2nd Inning
                         if(i==1):
                             target=target+run
+            
+            #Set TARGET
+            if i==0:
+                target=0
+            else:
+                target=target+1 
                     
             #Write to file for each batsman till the segment
             for player in CURRENT_SEGMENT_BATSMAN:
@@ -237,10 +243,7 @@ for doc in collection.find():
                 runs=home_runs+non_home_runs
                 team=TEAMS[player]
                 
-                if i==0:
-                    target=0
-                else:
-                    target=target+1        
+                       
                 
                 if player in BALLS_FACED_TILL_NOW.keys():
                     balls_faced=BALLS_FACED_TILL_NOW[player]
