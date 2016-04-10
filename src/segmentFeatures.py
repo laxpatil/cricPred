@@ -40,7 +40,7 @@ segment=1
 filename="F:\\Books\\Statistical Machine Learning (SML)\\Project\\Data\\Statistics\\Segment"
 filename= filename+str(segment)+".csv"
 openFile=open(filename, "w")
-fileHeader="Batsman,Total Runs Scored,Home Runs,Non Home Runs,Balls Faced,R0,W0,R1,W1,Current_HR,Current_NHR,Target,Team,Home"
+fileHeader="Batsman,Total Runs Scored,Home Runs,Non Home Runs,Balls Faced,R0,W0,R1,W1,Current_HR,Current_NHR,Target,Runs Made,Team,Home"
 openFile.write(fileHeader)
 openFile.write("\n")
 
@@ -89,7 +89,9 @@ for doc in collection.find():
         home_country=VENUES[venue]
         
         #print venue, " : ",home_country
-
+        target1=0
+        target2=0
+        target=0
         #iterate for both innings
         for i in range(num_innings):
             CURRENT_MATCH_RUNS={}
@@ -100,12 +102,15 @@ for doc in collection.find():
             CURRENT_SEGMENT_BATSMAN=[]
             CURRENT_HR={}
             CURRENT_NHR={}
-            target=0
+            
             wickets=0
             r0=0
             r1=0
             w0=0
             w1=0
+            nhr=0
+            hr=0
+            runs_made=0
             
             if i==0:
                 deliveries=doc['innings'][0]['1st innings']['deliveries']
@@ -129,6 +134,11 @@ for doc in collection.find():
                 lower= 0.0
                 higher=5.0 * segment
                 #***********************
+                for ball_attr in ball.keys():
+                    run=ball[ball_attr]['runs']['total']
+                    runs_made+=run
+                
+                
                 if over>=lower and over<higher:     
                     for ball_attr in ball.keys():
                         #print ball[ball_attr]['runs']['total']
@@ -151,7 +161,7 @@ for doc in collection.find():
                             CURRENT_MATCH_RUNS[batsman]=run
                         
                         #update target for 2nd Inning
-                        if(i==1):
+                        if(i==0):
                             target=target+run
                         
                         
@@ -185,11 +195,16 @@ for doc in collection.find():
                         #CURRENT SEGMENT HOME RUNS & NON HOME RUNS
                         if(over>=seg1*5.0) and (over<segment*5.0):
                             if run==4 or run==6:
+                                
+                                
+                                hr=hr+run
                                 if batsman in CURRENT_HR.keys():
                                     CURRENT_HR[batsman]=CURRENT_HR[batsman]+run
                                 else:
                                     CURRENT_HR[batsman]=run
                             else:
+                                
+                                nhr=nhr+run
                                 if batsman in CURRENT_NHR.keys():
                                     CURRENT_NHR[batsman]=CURRENT_NHR[batsman]+run
                                 else:
@@ -234,15 +249,19 @@ for doc in collection.find():
                         run=ball[ball_attr]['runs']['batsman']
                         
                         #update target for 2nd Inning
-                        if(i==1):
+                        if(i==0):
                             target=target+run
             
             #Set TARGET
             if i==0:
+                target2=runs_made+1
                 target=0
             else:
-                target=target+1 
-                    
+                target=target2
+            
+            
+            #print "HR " , hr
+            #print "NHR ", nhr        
             #Write to file for each batsman till the segment
             for player in CURRENT_SEGMENT_BATSMAN:
                 
@@ -282,7 +301,7 @@ for doc in collection.find():
                 else:
                     current_nhr=0
                 
-                feature="" + player + "," + str(runs) + ","  +str(home_runs) + "," +str(non_home_runs) + "," +str(balls_faced)+ "," +str(r0)+ ","+ str(w0)+","+ str(r1)+","+  str(w1)+","+ str(current_hr)+","+str(current_nhr)+"," +str(target) + ","  + str(team)+ ","  + str(home_or_away)
+                feature="" + player + "," + str(runs)+ ".0" + ","  +str(home_runs) +".0" + "," +str(non_home_runs) + ".0" + "," +str(balls_faced)+ "," +str(r0)+ ".0" + ","+ str(w0)+","+ str(r1)+".0" +","+  str(w1)+","+ str(hr)+","+str(nhr)+"," +str(target) + "," +str(runs_made) +"," + str(team)+ ","  + str(home_or_away)
                 print feature
                 openFile.write(feature)
                 openFile.write("\n")   
