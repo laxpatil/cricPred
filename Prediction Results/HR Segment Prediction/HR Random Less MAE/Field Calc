@@ -9,3 +9,23 @@ PREDICTED HOME RUNS
 
 SUM([Predicted HR])
 
+
+
+
+
+
+
+
+
+
+CURRENT NON HOME RUNS
+
+IF WINDOW_MAX(SUM([Current NHR])) > WINDOW_MAX(SUM([Predicted NHR])) THEN SUM([Current NHR])  
+ELSE SUM([Predicted NHR])  
+END
+
+
+PREDICTED NON HOME RUNS
+
+SUM([Predicted NHR])
+
