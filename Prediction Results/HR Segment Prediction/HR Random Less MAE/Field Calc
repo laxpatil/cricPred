@@ -1,0 +1,11 @@
+CURRENT HOME RUNS
+
+IF WINDOW_MAX(SUM([Current HR])) > WINDOW_MAX(SUM([Predicted HR])) THEN SUM([Current HR])  
+ELSE SUM([Predicted HR])  
+END
+
+
+PREDICTED HOME RUNS
+
+SUM([Predicted HR])
+
