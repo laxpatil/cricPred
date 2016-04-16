@@ -29,3 +29,32 @@ PREDICTED NON HOME RUNS
 
 SUM([Predicted NHR])
 
+
+
+
+
+TOTAL RUNS TILL SEGMENT
+
+IF WINDOW_MAX(SUM([Total Runs Till Segment])) > WINDOW_MAX(SUM([Predicted Total runs till Segment])) THEN SUM([Total Runs Till Segment])  
+ELSE SUM([Predicted Total runs till Segment])  
+END
+
+
+
+PREDICTED RUNS TILL SEGMENT
+
+SUM([Predicted Total runs till Segment])
+
+
+
+
+
+
+
+
+
+FINAL
+
+IF WINDOW_MAX(SUM([Final Runs Made])) > WINDOW_MAX(SUM([Predicted Total runs till Segment])) THEN SUM([Final Runs Made])  
+ELSE SUM([Predicted Total runs till Segment])  
+END
