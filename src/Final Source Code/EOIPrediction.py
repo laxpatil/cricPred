@@ -71,7 +71,7 @@ def main():
     
     #---------------------------PUT THE SEGMENT YOU WANT TO START PREDICTING FROM----------------------
     CURRENT_SEGMENT=1
-    inning=2
+    inning=1
     
     #-----------------------------------------------------
     
@@ -94,20 +94,24 @@ def main():
     df = pd.DataFrame(0, index=np.arange(len(test_data)), columns=['Predicted Total NHR till Segment'])
     nhr_runs = gl.SFrame(data=df)
     
+    test_data['Predicted Total HR till Segment']=hr_runs['Predicted Total HR till Segment']
+    test_data['Predicted Total NHR till Segment']=nhr_runs['Predicted Total NHR till Segment']
         
     while CURRENT_SEGMENT<=10:
         print "--------------Segment "+ str(CURRENT_SEGMENT)+" Started-----------------"  
         predict_HR= HRModel.getPredictedHomeRun(HRMods, train_data, CURRENT_SEGMENT, test_data)
         predict_NHR= NHRModel.getPredictedNHR(NHRMods, CURRENT_SEGMENT, test_data)
         
-        test_data['Predicted Total HR till Segment']=hr_runs['Predicted Total HR till Segment']
-        test_data['Predicted Total NHR till Segment']=nhr_runs['Predicted Total NHR till Segment']
+       
         
         test_data=updateHRFeatures(test_data, predict_HR)
         test_data=updateNHRFeatures(test_data, predict_NHR)
         
         #write to FILE
         filename=fileFolder+str(CURRENT_SEGMENT)+".csv"
+        
+        keylist=['Team','Total Matches Played','Runs Scored','Wickets Lost','Got All Out','Runs Conceded','Opponent Wickets Taken','Opponent All Out','Match Index','Batsman','Player Total Runs','Player Home Runs','Player Non Home Runs','Balls Faced','R0','W0','R1','W1','Current_HR','Current_NHR','Target','Final Runs Made','Extras','Home','Segment','Home Run Hitting Ability','Milestone Reaching Ability','Batting Average','Strike Rate','Matches Played','ClusterID','Predicted Total HR till Segment','Predicted Total NHR till Segment','Actual HR in Segment','Predicted HR in Segment','Actual NHR in Segment','Predicted NHR in Segment','Predicted Total runs till Segment']
+        test_data=test_data.select_columns(keylist)
         test_data.save(filename, format='csv')
         
         
