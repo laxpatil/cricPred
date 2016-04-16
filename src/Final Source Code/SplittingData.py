@@ -35,18 +35,13 @@ REMOVE_TEAMS={'Kenya','Bermuda','Scotland','Netherlands','Canada','Africa XI','A
 
 #File writing
 #***************************CHANGE SEGMENT *********************************************************************
-segment=1
+segment=10
 #********************************************************************************
-filename="F:\\Books\\Statistical Machine Learning (SML)\\Project\\Data\\Statistics\\Segment"
-filename= filename+str(segment)+".csv"
-openFile=open(filename, "w")
-fileHeader="Batsman,Player Total Runs ,Player Home Runs,Player Non Home Runs,Balls Faced,R0,W0,R1,W1,Current_HR,Current_NHR,Total Runs in Segment, Total HR till Segment, Total NHR till Segment,Total Runs Till Segment,Target,Final Runs Made,Extras,Team,Home,Segment"
-openFile.write(fileHeader)
-openFile.write("\n")
+
 
 VENUES={}
-file=open("F:\\Books\\Statistical Machine Learning (SML)\\Project\\Data\\venues.csv",'r')
-reader=csv.reader(file,delimiter=',')
+fileVenue=open("F:\\Books\\Statistical Machine Learning (SML)\\Project\\Data\\venues.csv",'r')
+reader=csv.reader(fileVenue,delimiter=',')
 for row in reader:
     if row[0] in VENUES.keys():
         pass
@@ -56,6 +51,24 @@ for row in reader:
 # for key,value in VENUES.iteritems():
 #     print key," : ",value
 #     
+docCount=0
+testInn=0
+trainInn=0
+trainFolder="F:\\Books\\Statistical Machine Learning (SML)\\Project\\Data\\Split\\Train\\"
+testFolder="F:\\Books\\Statistical Machine Learning (SML)\\Project\\Data\\Split\\Test\\"
+
+testFile=testFolder+"Segment"+str(segment)+".csv"
+testWriter=open(testFile, "w")
+fileHeader="Match Index,Batsman,Player Total Runs ,Player Home Runs,Player Non Home Runs,Balls Faced,R0,W0,R1,W1,Current_HR,Current_NHR,Total Runs in Segment, Total HR till Segment, Total NHR till Segment,Total Runs Till Segment,Target,Final Runs Made,Extras,Team,Home,Segment"
+testWriter.write(fileHeader)
+testWriter.write("\n")
+
+
+trainFile=trainFolder+"Segment"+str(segment)+".csv"
+trainWriter=open(trainFile, "w")
+fileHeader="Match Index,Batsman,Player Total Runs ,Player Home Runs,Player Non Home Runs,Balls Faced,R0,W0,R1,W1,Current_HR,Current_NHR,Total Runs in Segment, Total HR till Segment, Total NHR till Segment,Total Runs Till Segment,Target,Final Runs Made,Extras,Team,Home,Segment"
+trainWriter.write(fileHeader)
+trainWriter.write("\n")
 
 
 #HOME RUN HITTING ABILITY
@@ -63,7 +76,7 @@ for doc in collection.find():
     #counter=counter+1
     #print doc['info']['outcome']
     
-
+    
     if 'result' in doc['info']['outcome'].keys():
         #print doc['info']['outcome']['result']
         if doc['info']['outcome']['result']=='no result':
@@ -75,8 +88,16 @@ for doc in collection.find():
         if(num_innings>2):
             continue
     
+        docCount+=  1
         
-  
+        if docCount%10==0:
+            testInn+=1
+        else:
+            trainInn+=1
+            
+            
+        
+        
         
         if doc['info']['teams'][0] in REMOVE_TEAMS or doc['info']['teams'][1] in REMOVE_TEAMS:
             continue
@@ -321,7 +342,16 @@ for doc in collection.find():
                 
                 total_runs_in_seg=hr+nhr
                 
-                feature="" + player + "," + str(runs)+ ".0" + ","  +str(home_runs) +".0" + "," +str(non_home_runs) + ".0" + "," +str(balls_faced)+ "," +str(r0)+ ".0" + ","+ str(w0)+","+ str(r1)+".0" +","+  str(w1)+","+ str(hr)+".0"+","+str(nhr)+".0" + ","+ str(total_runs_in_seg) +","+ str(hr_till_segment)+"," + str(nhr_till_segment) +"," + str(total_runs_till_segment)+ "," + str(target) + "," +str(runs_made) +"," +str(extras)+"," +str(team)+ ","  + str(home_or_away)+","+str(segment)
-                print feature
-                openFile.write(feature)
-                openFile.write("\n")   
+                
+                if docCount%10==0:
+                    
+                    feature=str(testInn)+"," + player + "," + str(runs)+ ".0" + ","  +str(home_runs) +".0" + "," +str(non_home_runs) + ".0" + "," +str(balls_faced)+ "," +str(r0)+ ".0" + ","+ str(w0)+","+ str(r1)+".0" +","+  str(w1)+","+ str(hr)+".0"+","+str(nhr)+".0" + ","+ str(total_runs_in_seg) +","+ str(hr_till_segment)+"," + str(nhr_till_segment) +"," + str(total_runs_till_segment)+ "," + str(target) + "," +str(runs_made) +"," +str(extras)+"," +str(team)+ ","  + str(home_or_away)+","+str(segment)
+                    print "TEST --> " ,feature
+                    testWriter.write(feature)
+                    testWriter.write("\n")
+                else:
+                                      
+                    feature=str(trainInn)+"," + player + "," + str(runs)+ ".0" + ","  +str(home_runs) +".0" + "," +str(non_home_runs) + ".0" + "," +str(balls_faced)+ "," +str(r0)+ ".0" + ","+ str(w0)+","+ str(r1)+".0" +","+  str(w1)+","+ str(hr)+".0"+","+str(nhr)+".0" + ","+ str(total_runs_in_seg) +","+ str(hr_till_segment)+"," + str(nhr_till_segment) +"," + str(total_runs_till_segment)+ "," + str(target) + "," +str(runs_made) +"," +str(extras)+"," +str(team)+ ","  + str(home_or_away)+","+str(segment)
+                    print "TRAIN --> ", feature
+                    trainWriter.write(feature)
+                    trainWriter.write("\n")   

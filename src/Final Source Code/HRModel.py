@@ -7,8 +7,8 @@ import graphlab as gl
 def getHRModels(train_data):
     models = []
     
-    KNNfeatures=['Runs Scored', 'Target', 'R1']
-    #KNNfeatures=['Runs Scored','Wickets Lost','Got All Out', 'Runs Conceded','Opponent Wickets Taken','Opponent All Out','Player Total Runs','Balls Faced', 'R0','W0','R1','W1','Target','ClusterID','Player Home Runs','Home']
+    #KNNfeatures=['Runs Scored', 'Target', 'R1']
+    KNNfeatures=['Runs Scored','Wickets Lost','Got All Out', 'Runs Conceded','Opponent Wickets Taken','Opponent All Out','Player Total Runs','Balls Faced', 'R0','W0','R1','W1','Target','ClusterID','Player Home Runs','Home']
     
     #-------------------if want RANDOM then--------------------
     '''
